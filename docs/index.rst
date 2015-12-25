@@ -1,5 +1,5 @@
-.. title:: Pythonbase
+.. title:: Chronograph
 
-Pythonbase docs
+Chronograph docs
 
 
