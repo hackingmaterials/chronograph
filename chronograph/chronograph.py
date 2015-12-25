@@ -80,8 +80,16 @@ class Chronograph():
         return False
 
     @staticmethod
-    def get_split_time(split_data):
-        return (split_data['stop'] - split_data['start']).total_seconds()
+    def get_split_time(split_data, allow_still_running=False):
+        if "stop" in split_data:
+            stop_time = split_data["stop"]
+        elif allow_still_running:
+            stop_time = datetime.now()
+        else:
+            raise ValueError("Cannot get split data; make sure 'stop' is defined or use 'allow_still_running' option.")
+
+        return (stop_time - split_data['start']).total_seconds()
+
 
     @property
     def last_split_time(self):
@@ -90,7 +98,17 @@ class Chronograph():
     def to_json(self):
         return self.timing_data  # TODO: does datetime need to be converted to/from JSON?
 
-    # TODO: add pretty print report
+    def report(self):
+        report_str = "Report for {}\n".format(self.header)
+        for t in self.timing_data:
+            split_time = self.get_split_time(t, True)
+            running_text = "" if "stop" in t else " (still running)"
+            report_str += "Split {}: {}{}\n".format(t["label"], split_time, running_text)
+
+        report_str += "Total elapsed time: {}\n".format(self.total_elapsed_time)
+
+        self.print_fnc(report_str)
+
 
 
 if __name__ == "__main__":
@@ -101,8 +119,9 @@ if __name__ == "__main__":
     x.start("part 2")
     x.split()
     x.split("part 4")
-
-    print(x.to_json())
+    import time
+    time.sleep(3)
+    x.report()
 
 
 
