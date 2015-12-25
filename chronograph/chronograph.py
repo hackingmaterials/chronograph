@@ -41,10 +41,7 @@ class Chronograph():
                 self.print_fnc("{}: stopped at: {}\n".format(self.header, self.timing_data[-1]["start"]))
             if self.verbosity >= 1:
                 last_split = self.last_split
-                if last_split:
-                    last_split_text = "Last split ({}) time: {} s.".format(last_split['label'], self.get_split_time(last_split))
-                else:
-                    last_split_text = ""
+                last_split_text = "Last split ({}) time: {} s.".format(last_split['label'], self.get_split_time(last_split))
 
                 self.print_fnc("{}: Total elapsed time: {} s. {}\n".format(self.header, self.total_elapsed_time, last_split_text))
             return True
@@ -100,8 +97,11 @@ if __name__ == "__main__":
 
     x = Chronograph(name="my stopwatch", verbosity=1)
     x.start()
+    x.stop()
+    x.start()
     x.split()
     x.split()
+
     print(x.to_json())
 
 
