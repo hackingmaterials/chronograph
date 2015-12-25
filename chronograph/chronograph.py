@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import sys
 
@@ -9,8 +9,9 @@ __author__ = 'Anubhav Jain <ajain@lbl.gov>'
 
 class Chronograph():
 
-    def __init__(self, name="Default", start_timing=False, verbosity=0, m_logger=None, log_lvl=None):
+    def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False):
         self.name = name
+        self.header = "Chronograph {}".format(name) if name else "Chronograph"
         self.timing_data = []
         self.verbosity = verbosity
         if m_logger:
@@ -24,22 +25,31 @@ class Chronograph():
     def start(self, label=None):
         if not self.timing_data or "stop" in self.timing_data[-1]:
             self.timing_data.append({"start": datetime.now(), "label": label})
+            if self.verbosity >= 2:
+                self.print_fnc("{}: started at: {}\n".format(self.header, self.timing_data[-1]["start"]))
             return True
         else:
-            self.print_fnc("Warning: Cannot start Chronograph in current state\n")
+            self.print_fnc("{}: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.\n".format(self.header))
             return False
 
     def stop(self):
         if self.timing_data and "stop" not in self.timing_data[-1]:
             self.timing_data[-1]["stop"] = datetime.now()
+            if self.verbosity >= 2:
+                self.print_fnc("{}: stopped at: {}\n".format(self.header, self.timing_data[-1]["start"]))
+            if self.verbosity >= 1:
+                self.print_fnc("{}: Total elapsed time: {} s. Last split time: {} s.\n".format(self.header, self.total_elapsed_time, self.last_split_time))
             return True
         else:
-            self.print_fnc("Warning: Cannot stop Chronograph in current state\n")
+            self.print_fnc("{}: Warning: Cannot stop Chronograph while in current state! Start chronograph first.\n".format(self.header))
             return False
 
     def reset(self):
         self.timing_data = []
-        return True
+        if self.verbosity >= 2:
+            self.print_fnc("{}: Reset at: {}\n".format(self.header, self.timing_data[-1]["start"]))
+            return True
+        return False
 
     def split(self, label=None):
         success = self.stop()
@@ -47,15 +57,32 @@ class Chronograph():
             success = self.start(label=label)
         return success
 
+    @property
+    def total_elapsed_time(self):
+        elapsed_time = 0.0
+        for t in self.timing_data:
+            start_time = t['start']
+            stop_time = t['stop'] if 'stop' in t else datetime.now()
+            elapsed_time += (stop_time - start_time).total_seconds()
+
+        return elapsed_time
+
+    @property
+    def last_split_time(self):
+        for t in reversed(self.timing_data):
+            if 'stop' in t:
+                return (t['stop'] - t['start']).total_seconds()
+        return 0
+
+
     def to_json(self):
         return self.timing_data
 
 
 if __name__ == "__main__":
 
-    x = Chronograph()
+    x = Chronograph(name="test", verbosity=1)
     x.start("my label")
-    x.stop()
     x.split("code part 2")
     x.split()
     print(x.to_json())
