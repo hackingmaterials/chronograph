@@ -14,6 +14,7 @@ class Chronograph():
         self.header = "Chronograph {}".format(name) if name else "Chronograph"
         self.timing_data = []
         self.verbosity = verbosity
+
         if m_logger:
             self.print_fnc = getattr(m_logger, log_lvl.lower())
         else:
@@ -24,6 +25,7 @@ class Chronograph():
 
     def start(self, label=None):
         if not self.timing_data or "stop" in self.timing_data[-1]:
+            label = label if label else str(len(self.timing_data)+1)
             self.timing_data.append({"start": datetime.now(), "label": label})
             if self.verbosity >= 2:
                 self.print_fnc("{}: started at: {}\n".format(self.header, self.timing_data[-1]["start"]))
@@ -38,7 +40,13 @@ class Chronograph():
             if self.verbosity >= 2:
                 self.print_fnc("{}: stopped at: {}\n".format(self.header, self.timing_data[-1]["start"]))
             if self.verbosity >= 1:
-                self.print_fnc("{}: Total elapsed time: {} s. Last split time: {} s.\n".format(self.header, self.total_elapsed_time, self.last_split_time))
+                last_split = self.last_split
+                if last_split:
+                    last_split_text = "Last split ({}) time: {} s.".format(last_split['label'], self.get_split_time(last_split))
+                else:
+                    last_split_text = ""
+
+                self.print_fnc("{}: Total elapsed time: {} s. {}\n".format(self.header, self.total_elapsed_time, last_split_text))
             return True
         else:
             self.print_fnc("{}: Warning: Cannot stop Chronograph while in current state! Start chronograph first.\n".format(self.header))
@@ -68,31 +76,38 @@ class Chronograph():
         return elapsed_time
 
     @property
-    def last_split_time(self):
+    def last_split(self):
         for t in reversed(self.timing_data):
             if 'stop' in t:
-                return (t['stop'] - t['start']).total_seconds()
-        return 0
+                return t
+        return False
 
+    @staticmethod
+    def get_split_time(split_data):
+        return (split_data['stop'] - split_data['start']).total_seconds()
+
+    @property
+    def last_split_time(self):
+        return self.get_split_time(self.last_split) if self.last_split else 0
 
     def to_json(self):
-        return self.timing_data
+        return self.timing_data  # TODO: does datetime need to be converted to/from JSON?
+
+    # TODO: add pretty print report
 
 
 if __name__ == "__main__":
 
-    x = Chronograph(name="test", verbosity=1)
-    x.start("my label")
-    x.split("code part 2")
+    x = Chronograph(name="my stopwatch", verbosity=1)
+    x.start()
+    x.split()
     x.split()
     print(x.to_json())
 
 
 
-        # TODO: allow with Chronograph() mode
+# TODO: allow with Chronograph() mode
 
-        # TODO: allow getting a Chronograph by name
+# TODO: allow getting a Chronograph by name
 
-        # TODO: allow decorating a function with a Chronograph
-
-        # TODO: allow dumping Chronograph data to JSON
+# TODO: allow decorating a function with a Chronograph
