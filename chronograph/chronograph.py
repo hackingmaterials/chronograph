@@ -28,7 +28,7 @@ class Chronograph():
             label = label if label else str(len(self.timing_data)+1)
             self.timing_data.append({"start": datetime.now(), "label": label})
             if self.verbosity >= 2:
-                self.print_fnc("{}: started at: {}\n".format(self.header, self.timing_data[-1]["start"]))
+                self.print_fnc("{}: Split ({}) started at: {}\n".format(self.header, label, self.timing_data[-1]["start"]))
             return True
         else:
             self.print_fnc("{}: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.\n".format(self.header))
@@ -95,12 +95,12 @@ class Chronograph():
 
 if __name__ == "__main__":
 
-    x = Chronograph(name="my stopwatch", verbosity=1)
-    x.start()
+    x = Chronograph(name="my stopwatch", verbosity=2)
+    x.start("part 1")
     x.stop()
-    x.start()
+    x.start("part 2")
     x.split()
-    x.split()
+    x.split("part 4")
 
     print(x.to_json())
 
