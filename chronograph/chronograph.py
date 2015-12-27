@@ -7,6 +7,16 @@ __author__ = 'Anubhav Jain <ajain@lbl.gov>'
 
 # TODO: add docs
 
+all_chronographs = {}
+
+
+def get_chronograph(name, **kwargs):
+    if name not in all_chronographs:
+        all_chronographs[name] = Chronograph(name, **kwargs)
+
+    return all_chronographs[name]
+
+
 class Chronograph():
 
     def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False):
@@ -95,8 +105,9 @@ class Chronograph():
     def last_split_time(self):
         return self.get_split_time(self.last_split) if self.last_split else 0
 
-    def to_json(self):
-        return self.timing_data  # TODO: does datetime need to be converted to/from JSON?
+    @property
+    def timing_data(self):
+        return self.timing_data
 
     def report(self):
         report_str = "Report for {}\n".format(self.header)
@@ -109,11 +120,35 @@ class Chronograph():
 
         self.print_fnc(report_str)
 
+    def __enter__(self):
+        self.start()
+
+    def __exit__(self, type, value, tb):
+        self.stop()
+
 
 
 if __name__ == "__main__":
 
-    x = Chronograph(name="my stopwatch", verbosity=2)
+    """
+    print("dasf")
+    with get_chronograph("hello") as f:
+        import time
+        time.sleep(3)
+
+    print get_chronograph("hello").total_elapsed_time
+    """
+
+    """
+    c = get_chronograph("global", verbosity=1)
+    print c.verbosity
+
+    c = get_chronograph("global")
+    print c.verbosity
+    """
+
+    """
+    x = Chronograph(name="my stopwatch", verbosity=1)
     x.start("part 1")
     x.stop()
     x.start("part 2")
@@ -121,12 +156,18 @@ if __name__ == "__main__":
     x.split("part 4")
     import time
     time.sleep(3)
+    x.stop()
     x.report()
-
-
-
-# TODO: allow with Chronograph() mode
-
-# TODO: allow getting a Chronograph by name
+    """
 
 # TODO: allow decorating a function with a Chronograph
+
+# TODO: add examples
+
+# TODO: add overall docs
+
+# TODO: add unit tests (based on examples)
+
+# TODO: add intelligent __str__ and __repr__
+
+# TODO: add cast to float
