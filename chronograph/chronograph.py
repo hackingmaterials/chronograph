@@ -109,6 +109,9 @@ class Chronograph():
     def timing_data(self):
         return self.timing_data
 
+    def __float__(self):
+         return self.total_elapsed_time
+
     def report(self):
         report_str = "Report for {}\n".format(self.header)
         for t in self.timing_data:
@@ -129,6 +132,14 @@ class Chronograph():
 
 
 if __name__ == "__main__":
+
+    """
+    c = Chronograph()
+    c.start()
+    print("Hello")
+    c.stop()
+    print(float(c))
+    """
 
     """
     print("dasf")
@@ -169,5 +180,3 @@ if __name__ == "__main__":
 # TODO: add unit tests (based on examples)
 
 # TODO: add intelligent __str__ and __repr__
-
-# TODO: add cast to float
