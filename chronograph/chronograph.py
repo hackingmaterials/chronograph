@@ -109,9 +109,6 @@ class Chronograph():
     def timing_data(self):
         return self.timing_data
 
-    def __float__(self):
-         return self.total_elapsed_time
-
     def report(self):
         report_str = "Report for {}\n".format(self.header)
         for t in self.timing_data:
@@ -122,6 +119,15 @@ class Chronograph():
         report_str += "Total elapsed time: {}\n".format(self.total_elapsed_time)
 
         self.print_fnc(report_str)
+
+    def __float__(self):
+        return self.total_elapsed_time
+
+    def __str__(self):
+        return "{} with total elapsed time: {}".format(self.header, self.total_elapsed_time)
+
+    def __repr__(self):
+        return "{} with total elapsed time: {} and timing data: {}".format(self.header, self.total_elapsed_time, self.timing_data)
 
     def __enter__(self):
         self.start()
@@ -139,7 +145,10 @@ if __name__ == "__main__":
     print("Hello")
     c.stop()
     print(float(c))
+    print(str(c))
+    print(repr(c))
     """
+
 
     """
     print("dasf")
@@ -178,5 +187,3 @@ if __name__ == "__main__":
 # TODO: add overall docs
 
 # TODO: add unit tests (based on examples)
-
-# TODO: add intelligent __str__ and __repr__
