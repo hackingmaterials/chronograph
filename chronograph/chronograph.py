@@ -17,6 +17,20 @@ def get_chronograph(name, **kwargs):
     return all_chronographs[name]
 
 
+def add_chronograph(func):
+    #TODO: function decorator should allow other vars
+
+    def _decorator(*args, **kwargs):
+        my_name = func.__name__
+        my_chronograph = get_chronograph(my_name)
+        my_chronograph.start()
+        return_data = func(*args, **kwargs)
+        my_chronograph.stop()
+        return return_data
+
+    return _decorator
+
+
 class Chronograph():
 
     def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False):
@@ -136,9 +150,15 @@ class Chronograph():
         self.stop()
 
 
+@add_chronograph
+def time_me():
+    import time
+    time.sleep(3)
 
 if __name__ == "__main__":
 
+    x = time_me()
+    print get_chronograph("time_me")
     """
     c = Chronograph()
     c.start()
@@ -179,8 +199,6 @@ if __name__ == "__main__":
     x.stop()
     x.report()
     """
-
-# TODO: allow decorating a function with a Chronograph
 
 # TODO: add examples
 
