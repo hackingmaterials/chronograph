@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import sys
 
@@ -18,7 +18,6 @@ def get_chronograph(name, **kwargs):
 
 
 def add_chronograph(func):
-    #TODO: function decorator should allow other vars
 
     def _decorator(*args, **kwargs):
         my_name = func.__name__
@@ -200,7 +199,11 @@ if __name__ == "__main__":
     x.report()
     """
 
+# TODO: function decorator should allow other vars
+
 # TODO: add examples
+
+# TODO: add strict_mode (throws custom errors)
 
 # TODO: add overall docs
 
