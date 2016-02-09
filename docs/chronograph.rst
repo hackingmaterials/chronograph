@@ -1,6 +1,13 @@
 chronograph package
 ===================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    chronograph.tests
+
 Submodules
 ----------
 
