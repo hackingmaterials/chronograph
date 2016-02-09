@@ -19,6 +19,27 @@ Chronograph is a feature-packed timer/stopwatch/chronometer that makes it simple
     * cast to float gives total time
     * unit tested
 
+See below for usage examples.
+
+Installation
+============
+
+You can install via pip::
+
+    pip install Chronograph
+
+or easy_install::
+
+    pip install Chronograph
+
+or Github::
+
+    git clone git@github.com:computron/chronograph.git
+    cd chronograph
+    python setup.py install
+
+The Github page also contains the source code.
+
 Ten Examples of How to Use Chronograph
 ======================================
 

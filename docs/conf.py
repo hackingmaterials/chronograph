@@ -12,7 +12,7 @@
 # serve to show the default.
 
 import sys, os
-from pythonbase import __version__
+from chronograph import __version__
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pythonbase'
+project = u'Chronograph'
 copyright = u'2015, Anubhav Jain'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -229,8 +229,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'pythonbase', u'Pythonbase Documentation',
-   u'Anubhav Jain', 'skeleton for creating Python projects',
+  ('index', 'Chronograph', u'Pythonbase Documentation',
+   u'Anubhav Jain', 'timing and stopwatch utility',
    'Miscellaneous'),
 ]
 
@@ -247,7 +247,7 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'pythonbase'
+epub_title = u'Chronograph'
 epub_author = u'Anubhav Jain'
 epub_publisher = u'Anubhav Jain'
 epub_copyright = u'2015, Anubhav Jain'
