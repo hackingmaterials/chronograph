@@ -17,26 +17,27 @@ def get_chronograph(name, **kwargs):
     return all_chronographs[name]
 
 
-def add_chronograph(func):
-
-    def _decorator(*args, **kwargs):
-        my_name = func.__name__
-        my_chronograph = get_chronograph(my_name)
-        my_chronograph.start()
-        return_data = func(*args, **kwargs)
-        my_chronograph.stop()
-        return return_data
-
-    return _decorator
+def add_chronograph(*args1, **kwargs1):
+    def _add_chronograph_internal(func):
+        def _decorator(*args, **kwargs):
+            my_name = func.__name__
+            my_chronograph = get_chronograph(my_name, *args1, **kwargs1)
+            my_chronograph.start()
+            return_data = func(*args, **kwargs)
+            my_chronograph.stop()
+            return return_data
+        return _decorator
+    return _add_chronograph_internal
 
 
 class Chronograph():
 
-    def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False):
+    def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False, throw_exceptions=False):
         self.name = name
         self.header = "Chronograph {}".format(name) if name else "Chronograph"
         self.timing_data = []
         self.verbosity = verbosity
+        self.throw_exceptions = throw_exceptions
 
         if m_logger:
             self.print_fnc = getattr(m_logger, log_lvl.lower())
@@ -54,7 +55,10 @@ class Chronograph():
                 self.print_fnc("{}: Split ({}) started at: {}\n".format(self.header, label, self.timing_data[-1]["start"]))
             return True
         else:
-            self.print_fnc("{}: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.\n".format(self.header))
+            msg = "{}: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.\n".format(self.header)
+            if self.throw_exceptions:
+                raise ValueError(msg)
+            self.print_fnc(msg)
             return False
 
     def stop(self):
@@ -149,7 +153,7 @@ class Chronograph():
         self.stop()
 
 
-@add_chronograph
+@add_chronograph()
 def time_me():
     import time
     time.sleep(3)
@@ -199,11 +203,7 @@ if __name__ == "__main__":
     x.report()
     """
 
-# TODO: function decorator should allow other vars
-
 # TODO: add examples
-
-# TODO: add strict_mode (throws custom errors)
 
 # TODO: add overall docs
 
