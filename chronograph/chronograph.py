@@ -40,20 +40,17 @@ def get_chronograph(name, **kwargs):
 
 def add_chronograph(**kwargs1):
     """
-    A function decorator for timing things. Each execution of the function will be timed,
-    and the total will be stored in the global Chronograph.
+    A function decorator: each execution of the function will be timed as a separate split.
+    By default the Chronograph name will be the function name.
 
-    :param kwargs: (**kwargs) parameters to feed into the Chronograph constructor
+    :param kwargs1: (**kwargs1) parameters to feed into the Chronograph constructor
     :return: (this is a function decorator)
     """
 
     def _add_chronograph_internal(func):
         def _decorator(*args, **kwargs):
             my_name = func.__name__
-            if "name" in kwargs1:
-                my_chronograph = get_chronograph(**kwargs1)
-            else:
-                my_chronograph = get_chronograph(my_name, **kwargs1)
+            my_chronograph = get_chronograph(**kwargs1) if "name" in kwargs1 else get_chronograph(my_name, **kwargs1)
             my_chronograph.start()
             return_data = func(*args, **kwargs)
             my_chronograph.stop()
@@ -86,7 +83,7 @@ class Chronograph():
         :param verbosity: (int) set to 0=silent operation, 2=most verbose operation
         :param logger: (Logger) logging object for writing output. Defaults to sys.stdout
         :param log_lvl: (str) level to log at, e.g. "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
-        :param start_timing: (bool) set to True if you want to start timing immediately by calling start() function
+        :param start_timing: (bool) set to True if you want to start timing immediately (calls the start() function)
         :param throw_exceptions: (bool) set to True if you want invalid Chronograph commands to result in exceptions
         """
         self.name = name
