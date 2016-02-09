@@ -1,9 +1,6 @@
 import json
 import unittest
-
 import time
-
-from bson import json_util
 
 from chronograph.chronograph import Chronograph, get_split_time, get_chronograph, ChronographError, add_chronograph
 
@@ -135,6 +132,10 @@ class ChronographTests(unittest.TestCase):
         self.assertAlmostEqual(cg2.total_elapsed_time, 0.25, 1)
 
     def test_example10(self):
+        try:
+            from bson import json_util
+        except:
+            raise unittest.SkipTest("bson package not installed")
         cg = Chronograph(start_timing=True)
         time.sleep(0.25)
         cg.split("s2")
