@@ -38,7 +38,7 @@ or Github::
     cd chronograph
     python setup.py install
 
-The Github page also contains the source code.
+The `Github page <https://github.com/computron/chronograph>`_ also contains the source code.
 
 Ten Examples of How to Use Chronograph
 ======================================
