@@ -92,7 +92,7 @@ class ChronographTests(unittest.TestCase):
         cg = Chronograph(name="TestCase", throw_exceptions=True)
 
         cg.start()
-        self.assertRaises(ChronographError, cg.start())  # can't start a Chronograph that's already started!
+        self.assertRaises(ChronographError, cg.start)  # can't start a Chronograph that's already started!
 
     def test_example8b(self):
         cg = Chronograph(name="TestCase", throw_exceptions=False)
@@ -101,9 +101,10 @@ class ChronographTests(unittest.TestCase):
         cg.start()  # shouldn't throw exception
 
         t1 = cg.total_elapsed_time
-        c1 = cg.last_split_time
+        c1 = get_split_time(cg.timing_data[0], allow_still_running=True)
+        time.sleep(0.1)
         t2 = cg.total_elapsed_time
-        c2 = cg.last_split_time
+        c2 = get_split_time(cg.timing_data[0], allow_still_running=True)
         self.assertGreater(t2, t1)
         self.assertGreater(c2, c1)
 
