@@ -6,12 +6,17 @@ __author__ = 'Anubhav Jain <ajain@lbl.gov>'
 
 """
 A Chronograph implementation used to time execution of code. Features include:
-    - multiple verbosity levels
-    - built-in logging
-    - JSON output
-    - custom exception handling
-    - manage global list of named chronographs
-    - function decorators
+    * support for named Chronographs and labeled splits
+    * reporting
+    * multiple verbosity levels
+    * built-in logging
+    * JSON-compatible output data, including timestamps of start/stop
+    * custom exceptions if desired
+    * global management of Chronographs
+    * function decorators
+    * support of with() syntax
+    * cast to float gives total time
+    * unit tested
 
 Not intended for extremely precise timing (e.g., sub-millisecond level).
 """
@@ -22,6 +27,7 @@ all_chronographs = {}  # global list of chronographs
 def get_chronograph(name, **kwargs):
     """
     Get a chronograph and save it the global list of chronographs
+
     :param name: (str) the name of this chronograph
     :param kwargs: (**kwargs) parameters to feed into the Chronograph constructor
     :return: a Chronograph object
@@ -36,6 +42,7 @@ def add_chronograph(**kwargs1):
     """
     A function decorator for timing things. Each execution of the function will be timed,
     and the total will be stored in the global Chronograph.
+
     :param kwargs: (**kwargs) parameters to feed into the Chronograph constructor
     :return: (this is a function decorator)
     """
@@ -52,26 +59,30 @@ def add_chronograph(**kwargs1):
     return _add_chronograph_internal
 
 
+class ChronographError(Exception):
+    pass
+
 class Chronograph():
 
-    def __init__(self, name=None, verbosity=0, m_logger=None, log_lvl=None, start_timing=False, throw_exceptions=False):
+    def __init__(self, name=None, verbosity=0, logger=None, log_lvl=None, start_timing=False, throw_exceptions=False):
         """
         A class to represent a Chronograph for timing code execution
+
         :param name: (str) a name, useful when reporting or saving global Chronographs
         :param verbosity: (int) set to 0=silent operation, 2=most verbose operation
-        :param m_logger: (Logger) logging object for writing output. Defaults to sys.stdout
+        :param logger: (Logger) logging object for writing output. Defaults to sys.stdout
         :param log_lvl: (str) level to log at, e.g. "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
         :param start_timing: (bool) set to True if you want to start timing immediately by calling start() function
         :param throw_exceptions: (bool) set to True if you want invalid Chronograph commands to result in exceptions
         """
         self.name = name
-        self.header = "Chronograph {}".format(name) if name else "Chronograph"
+        self.header = name if name else "Unnamed Chronograph"
         self.timing_data = []
         self.verbosity = verbosity
         self.throw_exceptions = throw_exceptions
 
-        if m_logger:
-            self.print_fnc = getattr(m_logger, log_lvl.lower())
+        if logger:
+            self.print_fnc = getattr(logger, log_lvl.lower())
         else:
             self.print_fnc = sys.stdout.write
 
@@ -81,6 +92,7 @@ class Chronograph():
     def start(self, label=None):
         """
         Starts timing a new split.
+
         :param label: (str) a label to apply to this split (useful for reporting)
         """
         if not self.timing_data or "stop" in self.timing_data[-1]:
@@ -92,7 +104,7 @@ class Chronograph():
         else:
             msg = "{}: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.\n".format(self.header)
             if self.throw_exceptions:
-                raise ValueError(msg)
+                raise ChronographError(msg)
             self.print_fnc(msg)
             return False
 
@@ -127,6 +139,7 @@ class Chronograph():
     def split(self, label=None):
         """
         Stops the current split and immediately starts a new split, perhaps with a new label.
+
         :param label: (str) a label to apply to this split (useful for reporting)
         :return: (bool) if the split was created successfully (used internally)
         """
@@ -139,6 +152,7 @@ class Chronograph():
     def total_elapsed_time(self):
         """
         The total elapsed time (all splits) for the Chronograph
+
         :return: (float)
         """
         elapsed_time = 0.0
@@ -153,6 +167,7 @@ class Chronograph():
     def last_split(self):
         """
         The complete timing data of the last completed split.
+
         :return: (dict)
         """
         for t in reversed(self.timing_data):
@@ -164,6 +179,7 @@ class Chronograph():
     def last_split_time(self):
         """
         The time elapsed for the last completed split.
+
         :return: (float)
         """
         return get_split_time(self.last_split) if self.last_split else 0
@@ -172,11 +188,12 @@ class Chronograph():
     def timing_data(self):
         """
         All timing data.
+
         :return: (JSON array of dicts)
         """
         return self.timing_data
 
-    def report(self):
+    def report(self, printout=False):
         """
         Prints a full report of timing data as a string.
         """
@@ -188,7 +205,10 @@ class Chronograph():
 
         report_str += "Total elapsed time: {}\n".format(self.total_elapsed_time)
 
-        self.print_fnc(report_str)
+        if printout:
+            self.print_fnc(report_str)
+
+        return report_str
 
     def __float__(self):
         return self.total_elapsed_time
@@ -212,61 +232,8 @@ def get_split_time(split_data, allow_still_running=False):
     elif allow_still_running:
         stop_time = datetime.now()
     else:
-        raise ValueError("Cannot get split data; make sure 'stop' is defined or use 'allow_still_running' option.")
+        raise ChronographError("Cannot get split data; make sure 'stop' is defined or use 'allow_still_running' option.")
 
     return (stop_time - split_data['start']).total_seconds()
-
-
-@add_chronograph()
-def time_me():
-    import time
-    time.sleep(3)
-
-if __name__ == "__main__":
-
-    x = time_me()
-    print get_chronograph("time_me")
-    """
-    c = Chronograph()
-    c.start()
-    print("Hello")
-    c.stop()
-    print(float(c))
-    print(str(c))
-    print(repr(c))
-    """
-
-
-    """
-    print("dasf")
-    with get_chronograph("hello") as f:
-        import time
-        time.sleep(3)
-
-    print get_chronograph("hello").total_elapsed_time
-    """
-
-    """
-    c = get_chronograph("global", verbosity=1)
-    print c.verbosity
-
-    c = get_chronograph("global")
-    print c.verbosity
-    """
-
-    """
-    x = Chronograph(name="my stopwatch", verbosity=1)
-    x.start("part 1")
-    x.stop()
-    x.start("part 2")
-    x.split()
-    x.split("part 4")
-    import time
-    time.sleep(3)
-    x.stop()
-    x.report()
-    """
-
-# TODO: add examples
 
 # TODO: add unit tests (based on examples)
