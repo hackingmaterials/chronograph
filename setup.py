@@ -9,7 +9,7 @@ module_dir = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     setup(
         name='chronograph',
-        version='0.0.1',
+        version='1.0.0',
         description='Chronograph is a simple stopwatch / chronometer / chronograph for timing Python code.',
         long_description=open(os.path.join(module_dir, 'README.rst')).read(),
         url='https://github.com/computron/chronograph',
