@@ -13,7 +13,7 @@ Chronograph is a feature-packed timer/stopwatch/chronometer that makes it simple
     * built-in logging
     * JSON-compatible output data, including timestamps of start/stop
     * custom exceptions if desired
-    * global management of Chronographs
+    * pain-free global management of multiple Chronographs
     * function decorators
     * support of with() syntax
     * cast to float gives total time
@@ -198,4 +198,63 @@ Need to enforce correct usage? You can optionally throw exceptions::
     cg.start()  # can't start a Chronograph that's already started!
 
 Since the ``throw_exceptions`` parameter was set to True, this will throw the exception: ``chronograph.chronograph.ChronographError: TestCase: Warning: Cannot start Chronograph while in current state! Stop or reset chronograph before starting.``
+
+Example 9: Function decorators
+------------------------------
+
+If you decorate a function with the ``add_chronograph`` decorator, it will automatically time a split every time that function is called. By default, the name of the Chronograph will be the function name, but you can set any Chronograph initialization parameters (such as name) that you desire::
+
+    import time
+    from chronograph.chronograph import add_chronograph, get_chronograph
+
+
+    @add_chronograph()
+    def func1():
+        time.sleep(0.5)
+
+    @add_chronograph(name="my func2 timer")
+    def func2():
+        time.sleep(0.25)
+
+
+    if __name__ == "__main__":
+
+        func1()
+        func1()
+        func1()
+        func2()
+
+
+        cg1 = get_chronograph("func1")
+        cg1.report(printout=True)
+
+        print("")
+
+        cg2 = get_chronograph("my func2 timer")
+        cg2.report(printout=True)
+
+Example 10: JSON output and accessing split data
+------------------------------------------------
+
+The following code demonstrates how to access the split data as well as how to serialize and deserialize to JSON::
+
+    import json
+    import time
+    from bson import json_util
+    from chronograph.chronograph import Chronograph, get_split_time
+
+    if __name__ == "__main__":
+
+        cg = Chronograph(start_timing=True)
+        time.sleep(0.25)
+        cg.split()
+        time.sleep(0.75)
+        cg.stop()
+
+        # JSON compatible data
+        print json.dumps(cg.timing_data, default=json_util.default)
+
+        # Iterate through timing data and get all splits
+        for t in cg.timing_data:
+            print get_split_time(t)
 

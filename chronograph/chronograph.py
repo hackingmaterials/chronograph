@@ -12,7 +12,7 @@ A Chronograph implementation used to time execution of code. Features include:
     * built-in logging
     * JSON-compatible output data, including timestamps of start/stop
     * custom exceptions if desired
-    * global management of Chronographs
+    * pain-free global management of multiple Chronographs
     * function decorators
     * support of with() syntax
     * cast to float gives total time
@@ -50,13 +50,27 @@ def add_chronograph(**kwargs1):
     def _add_chronograph_internal(func):
         def _decorator(*args, **kwargs):
             my_name = func.__name__
-            my_chronograph = get_chronograph(my_name, **kwargs1)
+            if "name" in kwargs1:
+                my_chronograph = get_chronograph(**kwargs1)
+            else:
+                my_chronograph = get_chronograph(my_name, **kwargs1)
             my_chronograph.start()
             return_data = func(*args, **kwargs)
             my_chronograph.stop()
             return return_data
         return _decorator
     return _add_chronograph_internal
+
+
+def get_split_time(split_data, allow_still_running=False):
+    if "stop" in split_data:
+        stop_time = split_data["stop"]
+    elif allow_still_running:
+        stop_time = datetime.now()
+    else:
+        raise ChronographError("Cannot get split data; make sure 'stop' is defined or use 'allow_still_running' option.")
+
+    return (stop_time - split_data['start']).total_seconds()
 
 
 class ChronographError(Exception):
@@ -224,16 +238,5 @@ class Chronograph():
 
     def __exit__(self, type, value, tb):
         self.stop()
-
-
-def get_split_time(split_data, allow_still_running=False):
-    if "stop" in split_data:
-        stop_time = split_data["stop"]
-    elif allow_still_running:
-        stop_time = datetime.now()
-    else:
-        raise ChronographError("Cannot get split data; make sure 'stop' is defined or use 'allow_still_running' option.")
-
-    return (stop_time - split_data['start']).total_seconds()
 
 # TODO: add unit tests (based on examples)
