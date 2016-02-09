@@ -82,8 +82,7 @@ class ChronographTests(unittest.TestCase):
         self.assertAlmostEqual(cg2.total_elapsed_time, 0.25, 1)
 
     def test_example7(self):
-        with get_chronograph("hello") as f:
-                import time
+        with get_chronograph("hello") as x:
                 time.sleep(1)
 
         self.assertAlmostEqual(get_chronograph("hello").total_elapsed_time, 1.0, 1)

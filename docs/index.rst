@@ -199,9 +199,9 @@ Example 7: Using the with() clause
 You can make the syntax of a Chronograph slightly more compact by using the ``with()`` clause::
 
     from chronograph.chronograph import get_chronograph
+    import time
 
-    with get_chronograph("hello") as f:
-            import time
+    with get_chronograph("hello") as x:
             time.sleep(1)
 
     print get_chronograph("hello").total_elapsed_time
