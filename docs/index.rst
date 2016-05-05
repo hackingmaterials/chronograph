@@ -30,7 +30,7 @@ You can install via pip::
 
 or easy_install::
 
-    pip install Chronograph
+    easy_install Chronograph
 
 or Github::
 
