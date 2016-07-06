@@ -235,5 +235,3 @@ class Chronograph():
 
     def __exit__(self, type, value, tb):
         self.stop()
-
-# TODO: add unit tests (based on examples)
