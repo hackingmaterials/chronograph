@@ -229,7 +229,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Chronograph', u'Pythonbase Documentation',
+  ('index', 'Chronograph', u'Chronograph Documentation',
    u'Anubhav Jain', 'timing and stopwatch utility',
    'Miscellaneous'),
 ]
