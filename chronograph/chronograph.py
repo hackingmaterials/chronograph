@@ -88,7 +88,7 @@ class Chronograph():
         """
         self.name = name
         self.header = name if name else "Unnamed Chronograph"
-        self.timing_data = []
+        self._timing_data = []
         self.verbosity = verbosity
         self.throw_exceptions = throw_exceptions
 
@@ -202,7 +202,11 @@ class Chronograph():
 
         :return: (JSON array of dicts)
         """
-        return self.timing_data
+        return self._timing_data
+
+    @timing_data.setter
+    def timing_data(self, new_data):
+        self._timing_data = new_data
 
     def report(self, printout=False):
         """
