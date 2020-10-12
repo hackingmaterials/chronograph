@@ -88,7 +88,7 @@ class Chronograph():
         """
         self.name = name
         self.header = name if name else "Unnamed Chronograph"
-        self.timing_data = []
+        self._timing_data = []
         self.verbosity = verbosity
         self.throw_exceptions = throw_exceptions
 
