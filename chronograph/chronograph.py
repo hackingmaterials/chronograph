@@ -202,7 +202,11 @@ class Chronograph():
 
         :return: (JSON array of dicts)
         """
-        return self.timing_data
+        return self._timing_data
+
+    @timing_data.setter
+    def timing_data(self, value):
+        self._timing_data = value
 
     def report(self, printout=False):
         """
