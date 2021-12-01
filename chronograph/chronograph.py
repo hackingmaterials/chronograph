@@ -205,8 +205,8 @@ class Chronograph():
         return self._timing_data
 
     @timing_data.setter
-    def timing_data(self, value):
-        self._timing_data = value
+    def timing_data(self, new_data):
+        self._timing_data = new_data
 
     def report(self, printout=False):
         """
